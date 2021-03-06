@@ -111,7 +111,12 @@ class WishList(QWidget):
         self.message_label.setText('Record created.')
 
     def delete_wish(self):
-        pass
+        if self.wish_list.selectedItems():
+            wish = self.wish_list.selectedItems()[-1]
+            self.db.delete(self.selected)
+            self.wish_list.takeItem(self.wish_list.row(wish))
+            self.select_last_item()
+            self.message_label.setText('Record deleted.')
 
     def select_last_item(self):
         try:
