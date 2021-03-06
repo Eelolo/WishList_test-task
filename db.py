@@ -43,6 +43,13 @@ class Database:
 
         self.db.commit()
 
+    def delete(self, id):
+        cursor = self.db.cursor()
+
+        cursor.execute("DELETE FROM " + self.table_name + " WHERE id = %s", (id,))
+
+        self.db.commit()
+
     def create_connection(self):
         db = mysql.connector.connect(
             host=self.localhost,
