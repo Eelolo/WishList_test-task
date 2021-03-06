@@ -33,6 +33,15 @@ class Database:
 
         return result
 
+    def read_by_id(self, id):
+        cursor = self.db.cursor()
+
+        cursor.execute("SELECT * FROM " + self.table_name + " WHERE id = %s", (int(id),))
+
+        result = cursor.fetchone()
+
+        return result
+
     def update(self, id, name, price, link, note):
         cursor = self.db.cursor()
 
