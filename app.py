@@ -1,7 +1,9 @@
 import sys
 import os
 from dotenv import load_dotenv
-from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QLineEdit, QVBoxLayout
+from PyQt5.QtWidgets import (
+    QWidget, QApplication, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QListWidget
+)
 from db import Database
 
 
@@ -51,7 +53,24 @@ class WishList(QWidget):
 
         entries.addWidget(self.message_label)
 
-        self.setLayout(entries)
+        container = QHBoxLayout()
+        container.addLayout(entries)
+
+        common_container = QVBoxLayout()
+        common_container.addLayout(container)
+
+        self.wish_list = QListWidget()
+
+        self.wish_list.itemClicked.connect(self.selection_changed)
+
+        wishes = QVBoxLayout()
+        wishes.addWidget(self.wish_list)
+        container.addLayout(wishes)
+
+        self.setLayout(common_container)
+
+    def selection_changed(self, item):
+        pass
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
