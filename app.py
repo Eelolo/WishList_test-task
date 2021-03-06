@@ -75,9 +75,11 @@ class WishList(QWidget):
         self.create_btn.clicked.connect(self.create_wish)
         self.save_btn = QPushButton()
         self.save_btn.setText('Save')
+        self.save_btn.setEnabled(False)
         self.save_btn.clicked.connect(self.update_wish)
         self.delete_btn = QPushButton()
         self.delete_btn.setText('Delete')
+        self.delete_btn.setEnabled(False)
         self.delete_btn.clicked.connect(self.delete_wish)
 
         buttons.addWidget(self.create_btn)
@@ -89,6 +91,8 @@ class WishList(QWidget):
 
         if self.wishes:
             self.wishes = (wish[1] for wish in self.wishes)
+            self.save_btn.setEnabled(True)
+            self.delete_btn.setEnabled(True)
         self.wish_list.addItems(self.wishes)
 
         self.selected = None
@@ -116,6 +120,8 @@ class WishList(QWidget):
 
         self.wish_list.addItems((wish[1],))
         self.select_last_item()
+        self.save_btn.setEnabled(True)
+        self.delete_btn.setEnabled(True)
         self.message_label.setText('Record created.')
 
     def delete_wish(self):
@@ -129,9 +135,12 @@ class WishList(QWidget):
     def select_last_item(self):
         try:
             item = self.wish_list.item(self.wish_list.count() - 1)
+            item.setSelected(True)
             self.selection_changed(item)
         except AttributeError:
             self.set_entries(('', '', '', ''))
+            self.save_btn.setEnabled(False)
+            self.delete_btn.setEnabled(False)
             self.message_label.setText('No records found.')
 
     def update_wish(self):
