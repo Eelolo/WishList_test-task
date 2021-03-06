@@ -33,6 +33,15 @@ class Database:
 
         return result
 
+    def read_by_name(self, name):
+        cursor = self.db.cursor()
+
+        cursor.execute("SELECT * FROM " + self.table_name + " WHERE name = %s", (name,))
+
+        result = cursor.fetchone()
+
+        return result
+
     def read_by_id(self, id):
         cursor = self.db.cursor()
 
