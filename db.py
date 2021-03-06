@@ -24,6 +24,15 @@ class Database:
 
         self.db.commit()
 
+    def read(self):
+        cursor = self.db.cursor()
+
+        cursor.execute("SELECT * FROM " + self.table_name + "")
+
+        result = cursor.fetchall()
+
+        return result
+
     def create_connection(self):
         db = mysql.connector.connect(
             host=self.localhost,
