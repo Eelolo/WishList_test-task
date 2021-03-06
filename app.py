@@ -88,13 +88,24 @@ class WishList(QWidget):
 
     def selection_changed(self, item):
         wish = self.db.read_by_name(item.data(0))
+        self.set_entries(wish[1:])
         self.selected = wish[0]
+
+    def set_entries(self, wish):
+        entries = (
+            self.name_entry, self.price_entry,
+            self.link_entry, self.note_entry
+        )
+
+        for idx, entry in enumerate(entries):
+            entry.setText(str(wish[idx]))
 
     def create_wish(self):
         idx = self.wish_list.count() + 1
         self.db.create('Wish' + str(idx), 0, '', '')
 
         wish = self.db.read()[-1]
+        self.set_entries(wish[1:])
 
         self.wish_list.addItems((wish[1],))
         self.message_label.setText('Record created.')
