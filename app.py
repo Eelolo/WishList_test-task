@@ -87,7 +87,8 @@ class WishList(QWidget):
         self.setLayout(common_container)
 
     def selection_changed(self, item):
-        pass
+        wish = self.db.read_by_name(item.data(0))
+        self.selected = wish[0]
 
     def create_wish(self):
         idx = self.wish_list.count() + 1
