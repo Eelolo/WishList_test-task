@@ -113,6 +113,14 @@ class WishList(QWidget):
     def delete_wish(self):
         pass
 
+    def select_last_item(self):
+        try:
+            item = self.wish_list.item(self.wish_list.count() - 1)
+            self.selection_changed(item)
+        except AttributeError:
+            self.set_entries(('', '', '', ''))
+            self.message_label.setText('No records found.')
+
     def update_wish(self):
         pass
 
