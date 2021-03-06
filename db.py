@@ -33,6 +33,16 @@ class Database:
 
         return result
 
+    def update(self, id, name, price, link, note):
+        cursor = self.db.cursor()
+
+        cursor.execute(
+            "UPDATE " + self.table_name + " SET name=%s, price=%s, link=%s, note=%s WHERE id=%s",
+            (name, price, link, note, id)
+        )
+
+        self.db.commit()
+
     def create_connection(self):
         db = mysql.connector.connect(
             host=self.localhost,
