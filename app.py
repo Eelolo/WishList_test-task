@@ -1,9 +1,10 @@
 import sys
 import os
+import re
 from dotenv import load_dotenv
 from PyQt5.QtWidgets import (
-    QWidget, QApplication, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QListWidget,
-    QPushButton
+    QWidget, QListWidget, QVBoxLayout, QApplication,
+    QLabel, QLineEdit, QHBoxLayout, QPushButton
 )
 import mysql.connector
 from db import Database
@@ -19,6 +20,9 @@ class WishList(QWidget):
         'wishlist',
         'wishes'
     )
+
+    url_pattern = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|" \
+                  r"(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
 
     def __init__(self):
         super().__init__()
@@ -97,11 +101,6 @@ class WishList(QWidget):
 
         self.selected = None
 
-    def selection_changed(self, item):
-        wish = self.db.read_by_name(item.data(0))
-        self.set_entries(wish[1:])
-        self.selected = wish[0]
-
     def set_entries(self, wish):
         entries = (
             self.name_entry, self.price_entry,
@@ -110,6 +109,11 @@ class WishList(QWidget):
 
         for idx, entry in enumerate(entries):
             entry.setText(str(wish[idx]))
+
+    def selection_changed(self, item):
+        wish = self.db.read_by_name(item.data(0))
+        self.set_entries(wish[1:])
+        self.selected = wish[0]
 
     def create_wish(self):
         idx = self.wish_list.count() + 1
@@ -132,19 +136,13 @@ class WishList(QWidget):
             self.select_last_item()
             self.message_label.setText('Record deleted.')
 
-    def select_last_item(self):
-        try:
-            item = self.wish_list.item(self.wish_list.count() - 1)
-            item.setSelected(True)
-            self.selection_changed(item)
-        except AttributeError:
-            self.set_entries(('', '', '', ''))
-            self.save_btn.setEnabled(False)
-            self.delete_btn.setEnabled(False)
-            self.message_label.setText('No records found.')
-
     def update_wish(self):
         try:
+            if not re.match(self.url_pattern, self.link_entry.text()) and self.link_entry.text() != '':
+                raise mysql.connector.errors.DatabaseError(': Incorrect link.')
+            elif int(self.price_entry.text()) < 0:
+                raise mysql.connector.errors.DatabaseError(': Incorrect price.')
+
             self.db.update(
                 self.selected,
                 self.name_entry.text(),
@@ -158,10 +156,22 @@ class WishList(QWidget):
         except mysql.connector.errors.DatabaseError as error:
             self.message_label.setText(str(error).split(': ')[1])
 
+    def select_last_item(self):
+        try:
+            item = self.wish_list.item(self.wish_list.count() - 1)
+            item.setSelected(True)
+            self.selection_changed(item)
+        except AttributeError:
+            self.set_entries(('', '', '', ''))
+            self.save_btn.setEnabled(False)
+            self.delete_btn.setEnabled(False)
+            self.message_label.setText('No records found.')
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     wl = WishList()
+    wl.setMinimumSize(600, 280)
     wl.setWindowTitle('WishList')
     wl.show()
     sys.exit(app.exec_())
