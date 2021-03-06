@@ -14,6 +14,16 @@ class Database:
             self.create_db()
             self.create_connection()
 
+    def create(self, name, price, link, note):
+        cursor = self.db.cursor()
+
+        cursor.execute(
+            "INSERT INTO " + self.table_name + " (name, price, link, note) VALUES (%s, %s, %s, %s)",
+            (name, price, link, note)
+        )
+
+        self.db.commit()
+
     def create_connection(self):
         db = mysql.connector.connect(
             host=self.localhost,
