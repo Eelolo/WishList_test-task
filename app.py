@@ -90,7 +90,13 @@ class WishList(QWidget):
         pass
 
     def create_wish(self):
-        pass
+        idx = self.wish_list.count() + 1
+        self.db.create('Wish' + str(idx), 0, '', '')
+
+        wish = self.db.read()[-1]
+
+        self.wish_list.addItems((wish[1],))
+        self.message_label.setText('Record created.')
 
     def delete_wish(self):
         pass
