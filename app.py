@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (
     QWidget, QApplication, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QListWidget,
     QPushButton
 )
+import mysql.connector
 from db import Database
 
 
@@ -108,6 +109,7 @@ class WishList(QWidget):
         self.set_entries(wish[1:])
 
         self.wish_list.addItems((wish[1],))
+        self.select_last_item()
         self.message_label.setText('Record created.')
 
     def delete_wish(self):
@@ -127,7 +129,19 @@ class WishList(QWidget):
             self.message_label.setText('No records found.')
 
     def update_wish(self):
-        pass
+        try:
+            self.db.update(
+                self.selected,
+                self.name_entry.text(),
+                self.price_entry.text(),
+                self.link_entry.text(),
+                self.note_entry.text(),
+            )
+
+            self.wish_list.selectedItems()[0].setText(self.name_entry.text())
+            self.message_label.setText('Changes saved.')
+        except mysql.connector.errors.DatabaseError as error:
+            self.message_label.setText(str(error).split(': ')[1])
 
 
 if __name__ == '__main__':
