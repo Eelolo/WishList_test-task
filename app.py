@@ -155,6 +155,8 @@ class WishList(QWidget):
             self.message_label.setText('Changes saved.')
         except mysql.connector.errors.DatabaseError as error:
             self.message_label.setText(str(error).split(': ')[1])
+        except ValueError:
+            self.message_label.setText('Need to choose a wish.')
 
     def select_last_item(self):
         try:
